@@ -3,7 +3,7 @@
  	<!-- 面包屑 -->
  	<div class="process">
     <el-breadcrumb separator-class="el-icon-minus">
-      <el-breadcrumb-item :to="{ path: '//prescription/unfinish' }">处方管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/prescription/unfinish' }">处方管理</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/prescription/unfinish' }">待处理</el-breadcrumb-item>
       <el-breadcrumb-item >处方详情</el-breadcrumb-item>
     </el-breadcrumb>
@@ -15,7 +15,7 @@
   	  	 	  处方详情
   	  	 </div>
   	  	 <div class="nav_right">
-  	  	 	  {{num}}
+  	  	 	  处方编号: {{data.recipeCode}}
   	  	 </div>
   	  </div>
   	  <div class="detail_info">
@@ -26,97 +26,122 @@
   	  				<ul>
   	  					<li>
   	  						<span>开方机构：</span>
-  	  						 <p>水果湖社区卫生服务中心</p>
+  	  						 <p>{{data.organName}}</p>
   	  					</li>
   	  					<li>
-  	  						<span>开方机构：</span>
-  	  						 <p>水果湖社区卫生服务中心</p>
+  	  						<span>开方医生：</span>
+  	  						 <p>{{data.doctorName}}</p>
   	  					</li>
-  	  					<li>
-  	  						<span>开方机构：</span>
-  	  						 <p>水果湖社区卫生服务中心</p>
-  	  					</li>
-  	  					<li>
-  	  						<span>开方机构：</span>
-  	  						 <p>水果湖社区卫生服务中心</p>
-  	  					</li>
+                <li>
+                  <span>开方时间：</span>
+                   <p>{{data.kfTime}}</p>
+                </li>
   	  				</ul>
   	  			</div>
   	  		</div>
   	  		<div class="info_user">
   	  			<h5>开方信息</h5>
-  	  			<div class="info_form">
+  	  			<div class="info_sick">
   	  				<ul>
   	  					<li>
-  	  						<span>开方机构：</span>
-  	  						 <p>水果湖社区卫生服务中心</p>
+  	  						<span>姓名：</span>
+  	  						 <p>{{data.patientName}}</p>
   	  					</li>
   	  					<li>
-  	  						<span>开方机构：</span>
-  	  						 <p>水果湖社区卫生服务中心</p>
+  	  						<span>科室：</span>
+  	  						 <p>{{data.departName}}</p>
   	  					</li>
   	  					<li>
-  	  						<span>开方机构：</span>
-  	  						 <p>水果湖社区卫生服务中心</p>
+  	  						<span>性别：</span>
+  	  						 <p>{{sexdata[data.patientSex]}}</p>
   	  					</li>
-  	  					<li>
-  	  						<span>开方机构：</span>
-  	  						 <p>水果湖社区卫生服务中心</p>
-  	  					</li>
+                <li>
+                  <span>电话：</span>
+                   <p>{{data.patientTel}}</p>
+                </li>
   	  				</ul>
   	  			</div>
   	  		</div>
   	  		<div class="info_result">
   	  			<h5>开方信息</h5>
   	  			<div class="info_form">
-  	  				<textarea readonly></textarea>
+  	  			    <div>{{data.organDiseaseName}}</div>
   	  			</div>
   	  		</div>
   	  	</div>
   	  	<div class="detail_info_right">
   	  		<div class="right_nav">
-  	  			<div class="right_info_left">rp</div>
+  	  			<div class="right_info_left">RP</div>
   	  			<div class="right_info_right">
   	  				<span>开方时间 ： </span>
-  	  				<span>2018-10-01 10:30</span>
+  	  				<span>{{data.kfTime}}</span>
   	  			</div>
   	  		</div>
   	  		<div class="drug_content">
   	  			<ul class="drug_list">
   	  				<li>药品名称</li>
   	  				<li>生产商家</li>
-  	  				<li>处方分类</li>
   	  				<li>规格</li>
   	  				<li>数量</li>
-  	  				<li>单位</li>
+  	  				<li>药品编码</li>
   	  			</ul>
-  	  			<ul class="list_data">
-  	  				<li>药品名称</li>
-  	  				<li>生产商家</li>
-  	  				<li>处方分类</li>
-  	  				<li>规格</li>
-  	  				<li>数量</li>
-  	  				<li>单位</li>
+  	  			<ul class="list_data" v-for="(item,index) in data.drugs">
+  	  				<li>{{item.drugName}}</li>
+  	  				<li>{{item.producer}}</li>
+              <li>{{item.specification}}</li>
+              <li>{{item.total}}</li>
+              <li>{{item.drugCode}}</li>
   	  			</ul>
   	  		</div>
   	  	</div>
   	  </div>
-  	  <div class="order">
-  	   	<span><router-link :to="{ path: '/prescription/unfinish/order' }">生成订单</router-link></span> 
+  	  <div class="order" >
+  	   	<span @click='open' v-if="this.id==5?false:true">生成订单</span> 
   	  </div>
   </div>
  </div>
 </template> 
 <script> 
+    import axios from 'axios'
+import { familyDoctor } from "../../common/common.js"
 export default { 
   name: 'component_name', 
   data () { 
     return { 
-    	num:"No.201800001"
+      cforeId:'',
+      url:familyDoctor(),
+      data:{},
+      id:"",
+      sexdata:["男","男","女"]
     }; 
   }, 
+  activated(){
+    this.id=window.localStorage.getItem("roleId")
+    this.cforeId=this.$route.query.id
+    this.requestData()
+  },
   methods: { 
-
+    open() {
+            this.$alert('确认生成订单', '温馨提示', {
+              confirmButtonText: '确定',
+              callback: action => {
+                   this.$router.push( {path:'/prescription/unfinish/order',query:{id:this.cforeId}})
+              }
+            });
+      },
+     requestData(){
+          axios({
+          method: 'post',
+          url: this.url+"/zhuoya-yplz/prescription/select",
+          headers: {'token': localStorage.getItem("token")},
+          data: {
+           id:this.cforeId
+          }
+        }).then((response)=>{
+          console.log(response)
+          this.data=response.data.cf
+        })
+      },
   } 
 }; 
 </script> 
@@ -131,18 +156,16 @@ h5{
 	color: #8a8fff;
 }
 p{
-	padding: 0;
-	margin: 0;
 	color: #a4a4a4;
 }
 .predetail{
   height: 100%;
-  margin-left:3%;
-  width: 97%;
+  margin: 0 3% 0 3%;
 }
 .process{
 	width: 100%;
-  height: 39px;
+  height: 6%;
+  min-height: 39px;
 }
 .el-breadcrumb{
   height: 39px;
@@ -165,30 +188,34 @@ p{
 }
 /*内容*/
 .detail_content{
-	width: 91%;
-	background-color: white;
-	padding-left: 3%;
-	padding-right: 3%;
+	 width: 100%;
+  height: 92%;
+    background-color: white;
 }
 .content_nav{
-	height: 100px;
-	width: 100%;
+	height: 10%;
+  min-height: 80px;
+	width: 94%;
 	display: flex;
+  padding: 0 3%;
+  background-color:#f7f9ff; 
 }
 .detail_info{
 	overflow: hidden;
-	padding-bottom: 50px;
+  height: 70%;
+  padding: 0 3%;
 }
 .nav_left{
 	flex: 1;
-	line-height: 100px;
+	line-height: 80px;
 	color: #8a8fff;
 	font-size: 20px;
 	font-weight: 700;
+  /*background-color: white;*/
 }
 .nav_right{
 	flex: 1;
-	line-height: 100px;
+	line-height: 80px;
 	text-align: right;
 	color: #8a8fff;
 
@@ -197,41 +224,57 @@ p{
 	width: 30%;
 	float: left;
 }
+.info_result .info_form{
+  padding-top: 3%;
+}
 .info_form{
 	border: 1px solid #dbe9ff;
+  padding:0 3%;
 }
 .info_form ul{
-	margin-top: 21px;
-	margin-left: 19px;
+margin-bottom:3%;
 }
 .info_form li{
 	display: flex;
 	margin-top: 12px;
-}
-.info_form li:last-of-type{
-margin-bottom: 30px;
+  font-size: 14px;
 }
 .info_form li span{
-	color: #a4a4a4;
-	font-size: 15px;
+	color: #a4a4a4;	
 }
-textarea{
-	height: 100px;
-	outline: none;
-	border:none;
-	padding: 0;
-	width: 300px;
-	margin: 21px 19px;
-	font-size: 16px;
-	color: #a4a4a4
+.info_user .info_sick{
+  border: 1px solid #dbe9ff;
+  padding: 3%;
+  padding-top: 0;
 }
+.info_user .info_sick ul{
+  overflow: hidden;
+}
+.info_user .info_sick li{
+  float: left;
+  width: 50%;
+  display: flex;
+  font-size: 14px;
+  margin-top: 12px;
+}
+.info_user .info_sick li span{
+  color: #a4a4a4; 
+}
+.info_user .info_sick li p{
+flex: 1;
+}
+.info_result .info_form div{
+  padding:0 0 3% 0;
+  color: #a4a4a4;
+  font-size: 14px;
+}
+
 .detail_info_right{
 	margin-left: 2%;
 	float: left;
 	width: 68%
 }
 .right_nav{
-	width: 770px;
 	height: 40px;
 	overflow: hidden;
 }
@@ -240,25 +283,60 @@ textarea{
 	height: 40px;
 	line-height: 40px;
 	overflow: hidden;
+  color: #8a8fff;
+  font-size: 16px;
 }
 .right_info_right{
 	float: right;
+  color: #a4a4a4;
+}
+.drug_list li{
+  font-size: 16px;
+}
+.drug_content ul:nth-of-type(even){
+  background-color: #f6f6f6;
 }
 .list_data li,.drug_list li{
-	float: left;
-	height: 48px;
-	border:1px solid #d8daff;
-	margin-left: -1px;
-	line-height: 48px;
-	text-align: center;
-	color: #8a8fff;
+  float: left;
+  height: 44px;
+  border-right: 1px solid #d8daff;
+  border-top: 1px solid #d8daff;
+  line-height: 44px;
+  text-align: center;
+  color: #8a8fff;
+
 }
 .list_data li{
-	border-top:0;
+  font-size: 14px;
+  color: #a4a4a4;
+  border-top: 0;
+}
+.list_data,.drug_list{
+  margin-left: -1px;
+}
+.drug_content{
+  max-height: 400px;
+  overflow-y: auto;
+  border:1px solid #d8daff;
+  border-right: 0;
+  border-top: 0;
+}
+.drug_content::-webkit-scrollbar{
+  width:10px;
+}
+/*定义滚动条的轨道，内阴影及圆角*/
+.drug_content::-webkit-scrollbar-track{
+  border-radius: 10px;
+  background-color: #f4f7ff;
+}
+/*定义滑块，内阴影及圆角*/
+.drug_content::-webkit-scrollbar-thumb{
+  border-radius: 10px;
+  background-color: #c3d0e5;
 }
 .drug_list,.list_data{
 	width: 100%;
-	height: 50px;
+	height: 45px;
 }
 .drug_list{
 	background-color: #f0f5ff;
@@ -267,23 +345,19 @@ textarea{
 	width: 25%;
 }
 .drug_list li:nth-of-type(2),.list_data li:nth-of-type(2){
-	width: 20%;
+	width: 31%;
 }
 .drug_list li:nth-of-type(3),.list_data li:nth-of-type(3){
 	width: 15%;
 }
 .drug_list li:nth-of-type(4),.list_data li:nth-of-type(4){
-	width: 19%;
-}
-.drug_list li:nth-of-type(5),.list_data li:nth-of-type(5){
-	width: 10%;
+	width: 12%;
 }
 .drug_list li:last-of-type,.list_data li:last-of-type{
-	width: 10%;
+	width: 16%;
 }
 .order{
 	height: 40px;
-	padding-bottom: 30px;
 }
 .order span{
 	display: block;
@@ -294,5 +368,6 @@ textarea{
 	margin: auto;
 	border-radius: 5px;
 	text-align: center;
+  cursor: pointer;
 }
 </style> 
