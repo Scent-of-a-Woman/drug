@@ -97,7 +97,6 @@ import { familyDoctor } from "../../common/common.js"
         }).then((response)=>{
           this.total=response.data.gyslist.total
           this.data=response.data.gyslist.records
-          console.log(response)
         })
       },
        handleCurrentChange(val){
@@ -111,7 +110,6 @@ import { familyDoctor } from "../../common/common.js"
             gysId:this.value
           }
         }).then((response)=>{
-          console.log(response)
            this.data=response.data.gyslist.records
         })
       },

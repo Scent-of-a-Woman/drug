@@ -10,7 +10,7 @@
             <div class="center_img" :class="backcolor">
              <i :class="avatar"></i>
            </div>
-           <div class="name">{{username}}</div>
+           <div class="name" :title="username">{{username}}</div>
          </div>
        </span>
      </el-tab-pane>
@@ -21,7 +21,7 @@
           <li v-if="this.id==2?false:true"><router-link to='/drug/Supplier'>供应商列表</router-link></li>
            <li v-if="this.id==2?true:false"><router-link to='/drug/new_add'>供应商详情</router-link></li>
           <li><router-link to='/drug/Store'>门店列表</router-link></li>
-          <li><router-link to='/drug/Druglist'>药品信息列表</router-link></li>
+          <li v-if="this.id==5||this.id==1?false:true"><router-link to='/drug/Druglist'>药品信息列表</router-link></li>
         </ul>
       </div> 
     </el-tab-pane>
@@ -38,12 +38,12 @@
       <span slot="label" class="info_all" @click="four" ><i class="iconfont icon-dingdan iconfont_title"></i> <div class="info_name">订单管理</div></span>
       <div class="children_list">
        <ul class="list_name">
-        <li><router-link to='/order/take'>自提订单</router-link></li>
-        <li><router-link to='/order/give'>配送订单</router-link></li>
+        <li v-if="this.id==6?false:true"><router-link to='/order/take'>自提订单</router-link></li>
+        <li v-if="this.id==3?false:true"><router-link to='/order/give'>配送订单</router-link></li>
       </ul>
     </div> 
   </el-tab-pane>
-  <el-tab-pane name='five' :disabled="this.id==4||this.id==3?true:false">
+  <el-tab-pane name='five' :disabled="this.id==4||this.id==3||this.id==6?true:false">
     <span slot="label" class="info_all" @click="five"><i class="iconfont icon-jinbi iconfont_title"></i> <div class="info_name">对账管理</div></span>
     <div class="children_list">
       <ul class="list_name">
@@ -85,7 +85,6 @@ export default {
     }; 
   }, 
   created: function() {
-    console.log(this.$route.meta.keepAlive)
     this.routerPath = this.$route.path;
     let id=window.localStorage.getItem("roleId");
     this.id = id;
@@ -104,6 +103,9 @@ export default {
       case 5:
       this.activeName="second"
       break;
+      case 6:
+      this.activeName="four"
+      break;
     }
   },
   methods: { 
@@ -117,21 +119,23 @@ export default {
       }         
     },
     threes:function(){//医生
-      if(this.id==2||this.id==3){
+      if(this.id==2||this.id==3||this.id==6){
           return
       }else{   
        this.$router.push("/prescription/unfinish")
        }     
     },
     four:function(){//药店
-       if(this.id==4||this.id==2){
+       if(this.id==4){
           return
-      }else{   
+      }else if(this.id==6){   
+        this.$router.push("/order/give")
+      }else{
         this.$router.push("/order/take")
-       } 
+      } 
     },
     five:function(){//财务
-      if(this.id==3||this.id==4){
+      if(this.id==3||this.id==4||this.id==6){
           return
       }else{   
        this.$router.push("/finance/takeOrder")
@@ -148,7 +152,7 @@ export default {
         return 'iconfont icon-feiji iconfont_tit';
       }else if(ids == 2){
         return 'iconfont icon-gongsi1 iconfont_tit';
-      } else if (ids == 3){
+      } else if (ids == 3||ids==6){
         return 'iconfont icon-dianpu iconfont_tit';
       }else if(ids == 4 ){
         return 'iconfont icon-icon9001 iconfont_tit';
@@ -162,7 +166,7 @@ export default {
         return 'admin';
       }else if(ids == 2){
         return 'drug';
-      } else if (ids == 3){
+      } else if (ids == 3||ids==6){
         return 'shop';
       }else if(ids == 4 ){
         return 'doctor';
@@ -202,13 +206,17 @@ export default {
   margin-top: 40px;
 }
 .name{
-  width: 140px;
+  width: 120px;
+  padding:0 10px;
   text-align: center;
   margin-top: 10px;
   height: 20px;
   line-height: 20px;
   font-size: 16px;
   color: #8f8fff;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .icon-icon9001{
   color: white!important;

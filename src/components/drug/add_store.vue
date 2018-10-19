@@ -73,18 +73,7 @@
     methods: { 
       //注册门店信息   
       register:function(){
-        if(this.store.name==''||this.store.phone==''||this.store.account==''||this.store.pwd==''||this.store.address==''){
-             this.$message.error("请填写完整的信息");
-          return
-         }
-
-        if(this.store.name.indexOf(" ")!=-1||this.store.phone.indexOf(" ")!=-1||this.store.address.indexOf(" ")!=-1||this.store.account.indexOf(" ")!=-1||this.store.pwd.indexOf(" ")!=-1){
-            this.$message({
-            message:'请检查填写信息是否有空格',
-            type: 'warning'
-             });
-            return
-          }
+       
           axios({
             method: 'post',
             url: this.url+"/zhuoya-yplz/gys/saveStores",
@@ -100,7 +89,7 @@
               gysId:this.store.gysId
             }
           }).then((response)=>{
-            console.log(response)
+           
             if(response.data.code==0){             
                this.$message.success(response.data.msg)
                let _this=this
@@ -115,18 +104,27 @@
         },
        // 经纬度获取
        long(){
-        if(this.store.address!=''){
-
-          let reg=/[\u4E00-\u9FA5]/g;
-          if(reg.test(this.store.address)||reg.test(this.store.name)){
-
-          }else{
+         if(this.store.name==''||this.store.phone==''||this.store.account==''||this.store.pwd==''||this.store.address==''){
+             this.$message.error("请填写完整的信息");
+             return
+         }
+        if(this.store.name.indexOf(" ")!=-1||this.store.phone.indexOf(" ")!=-1||this.store.address.indexOf(" ")!=-1||this.store.account.indexOf(" ")!=-1||this.store.pwd.indexOf(" ")!=-1){
             this.$message({
-            message:'请填写完整的信息',
+            message:'请检查填写信息是否有空格',
             type: 'warning'
-             });  //错的执行
+             });
+            return
           }
-        }
+        let phone =this.store.phone
+            if(!(/^1(3|4|5|7|8)\d{9}$/.test(phone))){ 
+              this.$message.error("手机号码有误，请重填");  
+              return false; 
+            } 
+          let reg = this.store.name
+             if(!(/^[\u4E00-\u9FA5]{1,6}$/).test(reg)){//匹配2到四个汉字
+                            this.$message.error("姓名有误，请重填")
+                            return false; 
+                       }
         let _this = this
         let stie = _this.store.address
         MP("oGE2vseErZSNZRB4GDeOQ9bkyVjlzjOM").then(response=>{

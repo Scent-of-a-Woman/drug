@@ -16,6 +16,7 @@ import finish from '@/components/prescription/finish'
 import predetail from '@/components/prescription/predetail'
 import order from '@/components/prescription/order'
 import pay from '@/components/prescription/pay'
+import finished from '@/components/prescription/finished'
 // 订单管理
 import take from '@/components/order/take'
 import give from '@/components/order/give'
@@ -62,6 +63,7 @@ let router= new Router({
                 { path: '/prescription/unfinish/detail', component: predetail, name: '处方详情', meta:{ keepAlive: true} },
                 { path: '/prescription/unfinish/order', component: order, name: '生成订单', meta:{ keepAlive: false} },
                 { path: '/prescription/unfinish/pay', component: pay, name: '支付',meta:{ keepAlive: false}},
+                { path: '/prescription/finish/finished', component: finished, name: '详情',meta:{ keepAlive: false}}
             ]
     },
     {

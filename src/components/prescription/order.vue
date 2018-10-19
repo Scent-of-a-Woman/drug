@@ -45,7 +45,10 @@
 							<li>价格/药企</li>
 							<li>配送至</li>
 						</ul>
-						<ul v-for="(item,index) in dataps" class="Middleman_lists" >
+						<ul class="No_ps" v-if="totals==0?true:false">
+							<li>暂无配送药企</li>
+						</ul>
+						<ul v-for="(item,index) in dataps" class="Middleman_lists"  v-if="totals==0?false:true">
 							<li> 
 								<div :title="item.gysName" class="icon_text" :style="{'background-color':statusText[item.gysId][0]}">
 									<span>{{item.gysName}}</span>
@@ -53,14 +56,57 @@
 								{{item.price}}
 							</li>
 							<li>
-								<ul class="style_lisy">
-									<li @click="home(item)">
+								<ul class="style_lisy" v-if="item.deliveryHome!=''&&item.deliveredHospital!=''?true:false">
+									<li @click="home(item)" v-if="
+									item.deliveryHome==''?false:true"
+									class="twoClass"
+									>
+									<div class="data_juli">
+											配送到家({{item.deliveryHome}})
+									</div>
+									</li>
+									<li  @click="yiyuan(item)"
+									v-if="item.deliveredHospital==''?false:true"
+									class="twoClass"
+									style="border-top: 1px solid #dbe9ff" 
+									>
+										<div class="data_juli">
+											社区医院({{item.deliveredHospital}})
+										</div>
+									</li>
+								</ul>
+								<!-- 配送到家 -->
+								<ul class="style_lisy" v-if="item.deliveryHome!=''&&item.deliveredHospital==''?true:false">
+									<li @click="home(item)" v-if="
+									item.deliveryHome==''?false:true"
+									>
 										<div class="data_juli">
 											配送到家({{item.deliveryHome}})
 										</div>
-
 									</li>
-									<li  @click="yiyuan(item)">
+									<li  @click="yiyuan(item)"
+									v-if="item.deliveredHospital==''?false:true"
+									>
+									
+										<div class="data_juli">
+											社区医院({{item.deliveredHospital}})
+										</div>
+									</li>
+								</ul>
+								<!-- 配送到医院 -->
+								<ul class="style_lisy" v-if="item.deliveryHome==''&&item.deliveredHospital!=''?true:false">
+									<li @click="home(item)" v-if="
+									item.deliveryHome==''?false:true"
+									>
+									
+										<div class="data_juli">
+											配送到家({{item.deliveryHome}})
+										</div>
+									</li>
+									<li  @click="yiyuan(item)"
+									v-if="item.deliveredHospital==''?false:true"
+									>
+									
 										<div class="data_juli">
 											社区医院({{item.deliveredHospital}})
 										</div>
@@ -89,15 +135,15 @@
 				<div class="common_data">{{selected_info}}</div>
 				<div class="common">支付金额 :</div>
 				<div class="common_data">{{ps.price}}</div>
-				<div class="common" v-if="active==0?false:true">配送到医院 :</div>
-				<div class="common" v-if="active==1?false:true">配送到家 :</div>
+				<div class="common" v-if="active==0?false:true">配送到家 :</div>
+				<div class="common" v-if="active==1?false:true">配送到医院 :</div>
 				<div class="common_data" v-if="active==0?false:true">{{ps.deliveryHome}}</div>
 				<div class="common_data" v-if="active==1?false:true">{{ps.deliveredHospital}}</div>
 			</div>
 			<div class="user_info">
 				<div class="user_name">
 					<p>姓名</p>
-					<input type="text" name="" maxlength="5" v-model='user_info.name' placeholder="收货人姓名">
+					<input type="text" name="" maxlength="5" minlength="2" v-model='user_info.name' placeholder="收货人姓名">
 				</div>
 				<div class="user_phone">
 					<p>手机号码</p>
@@ -105,7 +151,7 @@
 				</div>
 				<div class="user_adress">
 					<p>收件人地址</p>
-					<input type="text" name="" maxlength="30" v-model='user_info.address' placeholder="收货地址/自提可不填">
+					<input type="text" name="" maxlength="30" minlength="10" v-model='user_info.address' placeholder="收货地址/自提可不填">
 				</div>
 			</div> 
 
@@ -125,7 +171,7 @@
 			return { 
 				selected_info:"未选择",
 				price:"未选择",
-        isActive:false,//确认之后
+        		isActive:false,//确认之后
 				yaodian:"未选择",
 				arr:["1","2"],
 				url:familyDoctor(),
@@ -147,6 +193,7 @@
      			 total:"0",
      			 totals:"0",
      			 cforeId:"",
+     			 hospitalName:"",
      			 ps:{},
      			 psfs:{
      			 	0:["家"],
@@ -207,16 +254,19 @@
                                let _this=this
                                setTimeout(function(){
                                   _this.$router.push("/prescription/finish")
-                               },2000)
+                               },4000)
                             }else{
                               this.$message.error(response.data.msg)
                           } 
                         })
                       }else{
+                      	    if(this.user_info.address==''){
+                      	    	this.$message.error("填写配送地址")
+                      	    	return
+                      	    }
                             this.$router.push("/prescription/unfinish/pay")
                        }
                     }).catch(action => {
-                          console.log("点击取消了")  
                      })   
                },
                requestData:function(){
@@ -228,11 +278,11 @@
                      id:this.cforeId+""
                 }
            }).then((response)=>{
-               console.log(response)
                this.dataps=response.data.ps
                this.datazt=response.data.ztByDistance
-               this.total=response.data.storesTotal
-               this.totals=response.data.gysTotal
+               this.total=response.data.storesTotal            
+			   this.totals=response.data.gysTotal
+			   this.hospitalName=response.data.hospitalName
           })
       },
       computed_paixu:function(){
@@ -258,33 +308,44 @@ son(item){
     this.yaodian=item.storesName
     this.item=item
     this.selected_info="药店自取"
+     this.user_info.address=''
 },
 home(item){
+    this.active=1
     this.ps_status=true	
     this.status=false	
     this.selected_info="药企配送"
+    this.user_info.address=''
     this.item=item
-    this.active=0
     this.ps.deliveryHome=this.item.deliveryHome
     this.ps.price=this.item.price
     let ps_home=JSON.stringify(this.item)
     window.localStorage.setItem("ps_home",ps_home);
+    window.localStorage.removeItem("ps_yiyuan");
 },
 yiyuan(item){
+    this.active=0
     this.ps_status=true	
     this.status=false	
     this.selected_info="药企配送"
     this.item=item
+    this.user_info.address=this.hospitalName
     this.ps.deliveredHospital=this.item.deliveredHospital
     this.ps.price=this.item.price
-    this.active=1
     let ps_yiyuan=JSON.stringify(this.item)
     window.localStorage.setItem("ps_yiyuan",ps_yiyuan);
+     window.localStorage.removeItem("ps_home");
   },
  } 
 }; 
 </script> 
 <style scoped> 
+
+.Middleman_lists .style_lisy .twoClass{
+	height: 40px!important;
+	line-height: 40px!important;
+	border-bottom:0px!important;
+}
 .active{
   background-color: #ccc;
   color: white;
@@ -371,6 +432,7 @@ h6{
  width: 100%;
  height:420px;
  overflow-y: auto;
+ border:1px solid #dbe9ff;
 }
 .ul_css{
  cursor: pointer;
@@ -383,17 +445,13 @@ h6{
 }
 .drug_list li{
  float: left;
- border:1px solid #dbe9ff;
  text-align: center;
  height: 40px;
  font-size: 14px;
  line-height: 40px;
- /*	color: #a4a4a4;*/
- margin-right: -1px;
- border-bottom: 0px;
 }
 .drug_list ul:first-of-type{
- border-bottom: 0px;
+ /*border-bottom: 0px;*/
  overflow:hidden;
  background-color:#f5f9ff;
 }
@@ -402,7 +460,7 @@ h6{
  font-size: 16px;
 }
 .drug_list ul:last-of-type li{
- border-bottom:1px solid #dbe9ff!important;
+ /*border-bottom:1px solid #dbe9ff!important;*/
 }
 .drug_list li:first-of-type{
  position: relative;
@@ -444,12 +502,21 @@ h6{
 .order_aside_total span{
  color: #8a8fff;
 }
+.No_ps li{
+	width: 100%!important;
+}
+.Middleman_lists {
+	border-top: 1px solid #dbe9ff;
+	border-bottom: 1px solid #dbe9ff;
+	margin-top: -1px;
+	margin-bottom: -1px;
+}
 .Middleman_list li:last-of-type,.Middleman_lists li:last-of-type{
  width: 50%;
 }
 .Middleman_lists li:nth-of-type(2),.Middleman_lists li:nth-of-type(3){
  border-bottom: 0;
- width: 50%;
+ width: 51%;
  height: 80px;
 }
 .Middleman_lists li:first-of-type{
@@ -458,9 +525,15 @@ h6{
  position: relative;
 }
 .style_lisy li{
- height: 40px!important;
+ height: 40px;
  width: 100%!important;
- line-height: 40px!important;
+ line-height: 40px;
+ background-color: white;
+ border-left: 1px solid #dbe9ff;
+ /*margin-left: -1px;*/
+}
+.style_lisy li:first-of-type{
+	border-bottom: 1px solid #dbe9ff;
 }
 .style_lisy li .data_juli:hover{
  background-color: #8a8fff;

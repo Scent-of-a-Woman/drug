@@ -37,7 +37,7 @@
 				
 				<div class="search">
 					<div class="search_input">
-						<input type="text" name="" placeholder="订单编号/手机号码" maxlength="18" v-model="search">
+						<input type="text" name="" placeholder="订单编号/手机号码/姓名" maxlength="18" v-model="search">
 						<div class="btn_search" @click="btn_search">
 							<i class="el-icon-search icon_turn"></i>
 						</div>
@@ -135,9 +135,14 @@ methods: {
 				endDate:this.endTime
 			}
 		}).then((response)=>{
-			this.total=response.data.accountPage.total
+			if(response.data.code==0){
+				this.total=response.data.accountPage.total
 			this.sum=response.data.sum
 			this.data=response.data.accountPage.records
+			}else{
+				this.$message.erroe(response.data.msg)
+			}
+			
 		})
 	},
 	requestData:function(){
@@ -155,55 +160,66 @@ methods: {
 			this.data=response.data.accountPage.records
 		})
 	},
-			//分页
+	//分页
 			handleCurrentChange(val){
-				if(this.endTime!=NaN-NaN-NaN){
+				if(this.startTime&&this.endTime){
 					axios({
 					method: 'post',
 					url: this.url+"/zhuoya-yplz/account/findZTAccount",
 					headers: {'token': localStorage.getItem("token")},
 					data: {
 						pageNum: val,
-						beginDate:this.startTime,
-						endDate:this.endTime,
-						pageSize: '6',
+					pageSize: '6',
+					beginDate:this.startTime,
+         			endDate:this.endTime,
+         			searchkey:this.search,
+						
 					}
-					}).then((response)=>{
-					this.total=response.data.accountPage.total
-					this.data=response.data.accountPage.records
+				}).then((response)=>{
+						if(response.data.code==500){
+						this.$message.error(response.data.msg)
+					}else{
+						this.total=response.data.accountPage.total
+						this.data=response.data.accountPage.records
+					}
 					})
-				}else{
-				if(this.search){
-					axios({
+				}else if(this.search){
+						axios({
 					method: 'post',
 					url: this.url+"/zhuoya-yplz/account/findZTAccount",
 					headers: {'token': localStorage.getItem("token")},
-					data: {
+				data: {
 						pageNum: val,
+						pageSize: '6',
 						searchkey:this.search,
-						pageSize: '6',
+				}
+			}).then((response)=>{
+				if(response.data.code==500){
+						this.$message.error(response.data.msg)
+					}else{
+						this.total=response.data.accountPage.total
+						this.data=response.data.accountPage.records
 					}
-				}).then((response)=>{
-					this.total=response.data.accountPage.total
-					this.data=response.data.accountPage.records
-				})
-				
-				}else{
-					axios({
+			})
+		}else{
+			axios({
 					method: 'post',
 					url: this.url+"/zhuoya-yplz/account/findZTAccount",
 					headers: {'token': localStorage.getItem("token")},
-					data: {
+				data: {
 						pageNum: val,
 						pageSize: '6',
+				}
+			}).then((response)=>{
+				if(response.data.code==500){
+						this.$message.error(response.data.msg)
+					}else{
+						this.total=response.data.accountPage.total
+						this.data=response.data.accountPage.records
 					}
-				}).then((response)=>{
-					this.total=response.data.accountPage.total
-					this.data=response.data.accountPage.records
-				})
-				}
-				}
-			},
+			})
+		}
+		},	
 			btn_search:function(){
 				axios({
 					method: 'post',
@@ -217,7 +233,6 @@ methods: {
 				}).then((response)=>{
 					this.total=response.data.accountPage.total
 					this.data=response.data.accountPage.records
-					console.log(response)
 				})
 			}
 		} 

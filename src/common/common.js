@@ -3,7 +3,7 @@ import axios from "axios"
 export function familyDoctor() {
     return 'http://120.24.178.254:9090'
     // return 'http://chensheng.premier-tech.cn'
-    // return 'http://192.168.3.162:8080'
+    // return 'http://192.168.3.22:8080'
     
 }
 // 时间格式化代码 

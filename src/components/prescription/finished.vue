@@ -1,25 +1,20 @@
 <template> 
- <div class="predetail" >
- 	<!-- 面包屑 -->
- 	<div class="process">
-    <el-breadcrumb separator-class="el-icon-minus">
-      <el-breadcrumb-item :to="{ path: '/prescription/unfinish' }">处方管理</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/prescription/unfinish' }">待处理</el-breadcrumb-item>
-      <el-breadcrumb-item >处方详情</el-breadcrumb-item>
-    </el-breadcrumb>
-  </div>
-  <!-- 内容 -->
-  <div class="detail_content">
-  	  <div class="content_nav">
-  	  	 <div class="nav_left">
-  	  	 	  处方详情
-  	  	 </div>
-  	  	 <div class="nav_right">
-  	  	 	  处方编号: {{data.recipeCode}}
-  	  	 </div>
-  	  </div>
-  	  <div class="detail_info">
-  	  	<div class="detail_info_left">
+	<div class="finished">
+		<div class="process">
+			<el-breadcrumb separator-class="el-icon-minus">
+				<el-breadcrumb-item :to="{ path: '/prescription/unfinish' }">处方管理</el-breadcrumb-item>
+				<el-breadcrumb-item :to="{ path: '/prescription/unfinish' }">已处理</el-breadcrumb-item>
+				<el-breadcrumb-item >处方详情</el-breadcrumb-item>
+			</el-breadcrumb>
+		</div>
+		<div class="detail_content">
+			<div class="content_nav">
+			<div class="nav_left">
+				处方详情
+			</div>
+		</div>
+		<div class="content_info">
+			<div class="detail_info_left">
   	  		<div class="info_name">
   	  			<h5>医生信息</h5>
   	  			<div class="info_form">
@@ -95,56 +90,45 @@
   	  		</div>
   	  	</div>
   	  </div>
-  	  <div class="order" >
-  	   	<span @click='open' v-if="this.id==5?false:true">生成订单</span> 
-  	  </div>
-  </div>
- </div>
+		</div>
+		</div>
+	</div>
 </template> 
 <script> 
-    import axios from 'axios'
+	 import axios from 'axios'
 import { familyDoctor } from "../../common/common.js"
-export default { 
-  name: 'component_name', 
-  data () { 
-    return { 
-      cforeId:'',
-      url:familyDoctor(),
-      data:{},
-      id:"",
-      sexdata:["男","男","女"]
-    }; 
-  }, 
-  activated(){
-    this.id=window.localStorage.getItem("roleId")
-    this.cforeId=this.$route.query.id
-    this.requestData()
-  },
-  methods: { 
-    open() {
-            this.$alert('确认生成订单', '温馨提示', {
-                         confirmButtonText: '确定',
-                         distinguishCancelAndClose: true})
-            .then(()=>{
-                 this.$router.push( {path:'/prescription/unfinish/order',query:{id:this.cforeId}})
-            }).catch(action => {}) 
-      },
-     requestData(){
-          axios({
-          method: 'post',
-          url: this.url+"/zhuoya-yplz/prescription/select",
-          headers: {'token': localStorage.getItem("token")},
-          data: {
-           id:this.cforeId
-          }
-        }).then((response)=>{
-          this.data=response.data.cf
-        })
-      },
-  } 
+	export default { 
+		data () { 
+			return { 
+				cfId:"",
+				 url:familyDoctor(),
+      			data:{},
+      			id:"",
+      			sexdata:["男","男","女"]
+			}; 
+		}, 
+		created(){
+			this.cfId=this.$route.query.id
+			 this.requestData()
+		},
+		methods: { 
+			     requestData(){
+          			axios({
+         			 method: 'post',
+         			 url: this.url+"/zhuoya-yplz/prescription/select",
+         			 headers: {'token': localStorage.getItem("token")},
+         			 data: {
+         				  id:this.cfId
+          				}
+       				 }).then((response)=>{
+          					this.data=response.data.cf
+        			})
+     			 },
+			} 
 }; 
 </script> 
-<style scoped> 
+
+<style  scoped> 
 h5{
 	padding: 0;
 	margin: 0;
@@ -157,39 +141,33 @@ h5{
 p{
 	color: #a4a4a4;
 }
-.predetail{
-  height: 100%;
-  margin: 0 3% 0 3%;
+.finished{
+	height: 100%;
+	margin: 0 3% 0 3%;
 }
 .process{
 	width: 100%;
-  height: 6%;
-  max-height: 39px;
+	height: 6%;
+	max-height: 39px;
 }
 .el-breadcrumb{
-  height: 39px;
+	height: 39px;
 }
 .el-breadcrumb__item{
-  height: 39px;
+	height: 39px;
 }
 .process >>> .el-breadcrumb__inner{
-  height: 39px;
-  line-height: 39px;
-   color: #8a8fff;
+	height: 39px;
+	line-height: 39px;
+	color: #8a8fff;
 
 }
 .el-breadcrumb__separator{
-  margin: 0 3px;
+	margin: 0 3px;
 }
 .process >>> .el-breadcrumb__inner.is-link{
-  color: #bdc0c5;
-  font-weight: 300;
-}
-/*内容*/
-.detail_content{
-	 width: 100%;
-  height: 92%;
-  background-color: white;
+	color: #bdc0c5;
+	font-weight: 300;
 }
 .content_nav{
 	height: 10%;
@@ -199,11 +177,6 @@ p{
   padding: 0 3%;
   background-color:#f7f9ff; 
 }
-.detail_info{
-	overflow: hidden;
-  height: 70%;
-  padding: 0 3%;
-}
 .nav_left{
 	flex: 1;
 	line-height: 80px;
@@ -211,12 +184,15 @@ p{
 	font-size: 20px;
 	font-weight: 700;
 }
-.nav_right{
-	flex: 1;
-	line-height: 80px;
-	text-align: right;
-	color: #8a8fff;
-
+.content_info{
+	overflow: hidden;
+  height: 70%;
+  padding: 0 3%;
+}
+.detail_content{
+	 width: 100%;
+  height: 92%;
+  background-color: white;
 }
 .detail_info_left{
 	width: 30%;
@@ -257,6 +233,7 @@ margin-bottom:3%;
 }
 .info_user .info_sick li span{
   color: #a4a4a4; 
+  white-space: nowrap;
 }
 .info_user .info_sick li p{
 flex: 1;
@@ -284,6 +261,7 @@ flex: 1;
   color: #8a8fff;
   font-size: 16px;
 }
+
 .right_info_right{
 	float: right;
   color: #a4a4a4;
@@ -297,27 +275,26 @@ flex: 1;
 .list_data li,.drug_list li{
   float: left;
   height: 44px;
-  border-right: 1px solid #d8daff;
-  border-top: 1px solid #d8daff;
+  border-right: 1px solid #d8daff; 
   line-height: 44px;
   text-align: center;
   color: #8a8fff;
-
+}
+.list_data li{
+	border-top: 1px solid #d8daff;
 }
 .list_data li{
   font-size: 14px;
   color: #a4a4a4;
-  border-top: 0;
 }
-.list_data,.drug_list{
-  margin-left: -1px;
+.list_data li:last-of-type,.drug_list li:last-of-type{
+	margin-right: -1px;
 }
 .drug_content{
   max-height: 400px;
   overflow-y: auto;
   border:1px solid #d8daff;
   border-right: 0;
-  border-top: 0;
 }
 .drug_content::-webkit-scrollbar{
   width:10px;
@@ -353,19 +330,5 @@ flex: 1;
 }
 .drug_list li:last-of-type,.list_data li:last-of-type{
 	width: 16%;
-}
-.order{
-	height: 40px;
-}
-.order span{
-	display: block;
-	line-height: 40px;
-	background-color: #8a8fff;
-	color: white;
-	width: 240px;
-	margin: auto;
-	border-radius: 5px;
-	text-align: center;
-  cursor: pointer;
 }
 </style> 

@@ -29,15 +29,17 @@
           <li>开方医生</li>
           <li>患者姓名</li>
           <li>开方时间</li>
+          <li>操作</li>
         </ul>
       </div>
       <div class="info_lists info_list">
         <ul class="list_head" v-for="(item,index) in data">
           <li>{{item.recipeCode}}</li>
-          <li>{{item.hospitalName}}</li>
+          <li :title="item.hospitalName">{{item.hospitalName}}</li>
           <li>{{item.doctorName}}</li>
           <li>{{item.patientName}}</li>
-          <li>{{item.kfTime }}</li>
+          <li :title="item.kfTime">{{item.kfTime}}</li>
+          <li> <router-link :to="{path:'./finish/finished',query:{id:item.id}}"><i class="el-icon-search icon_turn" ></i></router-link> </li>
         </ul>
       </div>
     </div>
@@ -99,7 +101,6 @@ import { familyDoctor } from "../../common/common.js"
         }).then((response)=>{
           this.total=response.data.page.total
           this.data=response.data.page.records
-          console.log(response)
         })
       },
        handleCurrentChange(val){
@@ -273,18 +274,29 @@ import { familyDoctor } from "../../common/common.js"
 
 }
 .list_head li:nth-of-type(2){
-  width: 26%;
+  width: 24%;
+  padding: 0 1%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .list_head li:nth-of-type(3){
-  width: 15%;
+  width: 10%;
 
 }
 .list_head li:nth-of-type(4){
-  width: 15%;
+  width: 10%;
 
 }
 .list_head li:nth-of-type(5){
-  width: 20%;
+  width: 18%;
+  padding: 0 1%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.list_head li:nth-of-type(6){
+  width: 10%;
 }
 .icon_turn{
   color: #8a8fff;

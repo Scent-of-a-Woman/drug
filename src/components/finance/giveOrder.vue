@@ -50,7 +50,6 @@
 						<li>订单编号</li>
 						<li>交易金额</li>
 						<li>支付宝帐号</li>
-						<li>手机号码</li>
 						<li>交易商户</li>
 						<li>交易完成时间</li>
 					</ul>
@@ -59,7 +58,6 @@
 					<ul class="list_head" v-for="(item,index) in data">
 						<li>{{item.outTradeNo}}</li>
 						<li>{{item.receiptAmount}}</li>
-						<li>{{item.sellerId}}</li>
 						<li>{{item.buyerLogonId}}</li>
 						<li :title="item.suppliersName">
 							<div :title="item.suppliersName" :style="{'background-color':statustext[item.gysId][0]}" class="icon_text">
@@ -137,8 +135,6 @@
          		getTerm:function() {
          			this.startTime = getLastDate(arguments[0])
          			this.endTime = getLastDate(arguments[1])
-         			console.log(this.startTime)
-         			console.log(this.endTime)
          			axios({
          				method: 'post',
          				url: this.url+"/zhuoya-yplz/account/findAccount",
@@ -153,7 +149,6 @@
          			this.total=response.data.accountPage.total
          			this.sum=response.data.sum
          			this.data=response.data.accountPage.records
-         			console.log(response)
          		})
          },
          requestData:function(){
@@ -166,7 +161,6 @@
          		pageSize: '6'
          	}
          }).then((response)=>{
-         	console.log(response)
          	this.total=response.data.accountPage.total
          	this.sum=response.data.sum
          	this.data=response.data.accountPage.records
@@ -174,35 +168,61 @@
  },
 			//分页
 			handleCurrentChange(val){
-				this.startTime = getLastDate(arguments[0])
-         		this.endTime = getLastDate(arguments[1])
-				if(this.search){
+				if(this.startTime&&this.endTime){
 					axios({
 					method: 'post',
 					url: this.url+"/zhuoya-yplz/account/findAccount",
 					headers: {'token': localStorage.getItem("token")},
 					data: {
 						pageNum: val,
-						pageSize: '6',
-						searchkey:this.search,
+					pageSize: '6',
+					beginDate:this.startTime,
+         			endDate:this.endTime,
+         			searchkey:this.search,
+						
 					}
 				}).then((response)=>{
+						if(response.data.code==500){
+						this.$message.error(response.data.msg)
+					}else{
 						this.total=response.data.accountPage.total
 						this.data=response.data.accountPage.records
+					}
 					})
-				}else{
+				}else if(this.search){
 						axios({
 					method: 'post',
 					url: this.url+"/zhuoya-yplz/account/findAccount",
 					headers: {'token': localStorage.getItem("token")},
 				data: {
-					pageNum: val,
-					pageSize: '6',
-					
+						pageNum: val,
+						pageSize: '6',
+						searchkey:this.search,
 				}
 			}).then((response)=>{
-				this.total=response.data.accountPage.total
-				this.data=response.data.accountPage.records
+				if(response.data.code==500){
+						this.$message.error(response.data.msg)
+					}else{
+						this.total=response.data.accountPage.total
+						this.data=response.data.accountPage.records
+					}
+			})
+		}else{
+			axios({
+					method: 'post',
+					url: this.url+"/zhuoya-yplz/account/findAccount",
+					headers: {'token': localStorage.getItem("token")},
+				data: {
+						pageNum: val,
+						pageSize: '6',
+				}
+			}).then((response)=>{
+				if(response.data.code==500){
+						this.$message.error(response.data.msg)
+					}else{
+						this.total=response.data.accountPage.total
+						this.data=response.data.accountPage.records
+					}
 			})
 		}
 		},
@@ -384,24 +404,21 @@
 	width: 20%;
 }
 .list_head li:nth-of-type(2){
-	width: 10%;
+	width: 15%;
 }
 .list_head li:nth-of-type(3){
-	width: 20%;
+	width: 21%;
 }
 .list_head li:nth-of-type(4){
-	width: 16%;
-}
-.list_head li:nth-of-type(5){
-	width: 13%;
+	width: 18%;
 	padding: 0 3%;
 	position: relative;
 	overflow:hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
-.list_head li:nth-of-type(6){
-	width: 13%;
+.list_head li:nth-of-type(5){
+	width: 18%;
 	padding: 0 1%;
 	overflow:hidden;
 	white-space: nowrap;

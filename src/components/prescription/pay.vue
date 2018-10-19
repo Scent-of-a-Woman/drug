@@ -117,7 +117,8 @@ openFullScreen() {
 	}, 2000);
 },
 			requestData:function(){
-				axios({
+				if(this.ps_home){
+					axios({
 					method: 'post',
 					url: this.url+"/zhuoya-yplz/pay/createOrder",
 					headers: {'token': localStorage.getItem("token")},
@@ -138,6 +139,29 @@ openFullScreen() {
 		 			this.drugs_sum=response.data.drugs_sum
 		 			this.qrcode()
 		 		})
+				}else{
+					axios({
+					method: 'post',
+					url: this.url+"/zhuoya-yplz/pay/createOrder",
+					headers: {'token': localStorage.getItem("token")},
+					data: {
+						name:this.data.name,
+						phone:this.data.phone,
+						gysId:this.ps_yiyuan.gysId+"",
+						cfId:this.ps_yiyuan.cfId+"",
+						qyfs:1+"",
+		 				// amount:this.ps_yiyuan.price,
+		 				amount:"0.01", 
+		 				address:this.data.address
+		 			}
+		 		}).then((response)=>{
+		 			this.ewm=response.data.qrCode
+		 			this.orderNum=response.data.tradeNo
+		 			this.druglist=response.data.drugList
+		 			this.drugs_sum=response.data.drugs_sum
+		 			this.qrcode()
+		 		})
+				}
 		 	},
 		 	qrcode () {
 		 		let qrcode = new QRCode('qrcode', {
@@ -163,7 +187,7 @@ openFullScreen() {
 		 					this.jystatus="1"
 		 					clearInterval(this.t)
 		 					this.djs()
-		 					}
+		 				}
 		 		})		 		
 		 	},
 		 	cnm:function(){//设置定时器
@@ -197,6 +221,10 @@ openFullScreen() {
 		 mounted() {
 		   this.wr()
 		},
+		destroyed:function(){
+			clearInterval(this.t)
+			clearInterval(this.tt)
+		}
 	}; 
 </script> 
 

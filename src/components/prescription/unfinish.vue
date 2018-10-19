@@ -103,7 +103,6 @@ import { familyDoctor } from "../../common/common.js"
         }).then((response)=>{
           this.total=response.data.page.total
           this.data=response.data.page.records
-          console.log(response)
         })
       },
        handleCurrentChange(val){

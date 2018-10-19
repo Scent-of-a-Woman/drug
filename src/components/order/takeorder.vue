@@ -45,7 +45,7 @@
 											maxlength="12" v-model="item.validDate" placeholder="格式为 xxxx-xx-xx">
 										</li>
 										<li class="trace">
-											<input type="text" :disabled="orderStatus==1?true:false" name="本位码" v-model="item.drugBatch" maxlength="12" placeholder="本位码">
+											<input type="text" :disabled="orderStatus==1?true:false" name="本位码" v-model="item.drugBatch" maxlength="26" placeholder="本位码">
 										</li>
 									</ul>
 								</div>
@@ -201,7 +201,6 @@
 					this.cfId=response.data.orderEntity.cfId
 					this.orderStatus=response.data.orderEntity.orderStatus
 					this.orderTime=response.data.orderEntity.createTime
-					
 				})
 			},
 			cfdetail:function(){
@@ -597,7 +596,7 @@ h5{
 }
 .info_user .info_sick li{
 	float: left;
-	width: 50%;
+	width: 44%;
 	display: flex;
 	font-size: 14px;
 	margin-top: 12px;
@@ -605,6 +604,7 @@ h5{
 }
 .info_user .info_sick li span{
 	color: #a4a4a4; 
+	white-space: nowrap;
 }
 .info_user .info_sick li p{
 	flex: 1;

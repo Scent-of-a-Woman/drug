@@ -29,8 +29,8 @@
         <ul class="list_head">
           <li>门店名称</li>
           <li>联系电话</li>
-          <li>地址</li>
-          <li>操作</li>
+          <li :style="{'width':Id==5?'44%':'29%'}">地址</li>
+          <li v-if="Id==5?false:true">操作</li>
         </ul>
       </div>
       <div class="info_lists info_list">
@@ -41,8 +41,8 @@
 			     </div>
           {{item.storesName}}</li> 
           <li>{{item.phone}}</li>
-          <li :title="item.storesAddress">{{item.storesAddress}}</li>
-          <li>
+          <li :title="item.storesAddress" :style="{'width':Id==5?'44%':'29%'}">{{item.storesAddress}}</li>
+          <li v-if="Id==5?false:true">
             <router-link :to="{path:'./storedetail',query:{id:item.id}}"><i class="el-icon-search icon_turn" ></i></router-link>     
           </li>
         </ul>
@@ -160,7 +160,6 @@ import { familyDoctor } from "../../common/common.js"
         }).then((response)=>{
           this.total=response.data.storeslist.total
           this.data=response.data.storeslist.records
-          console.log(response)
         })
       },
     } 
@@ -231,7 +230,14 @@ import { familyDoctor } from "../../common/common.js"
   line-height: 40px;
   font-size: 14px;
   border-radius: 5px;
+  cursor: pointer;
 }
+.new_add span a{
+  display: block;
+   width: 200px;
+  height: 40px;
+}
+
 .take_lists{
   height: 70%;
   background-color: white;
@@ -311,6 +317,7 @@ import { familyDoctor } from "../../common/common.js"
 	bottom: 0;
 	left: 25%;
 	font-size: 14px;
+
 }
 
 /*分页*/

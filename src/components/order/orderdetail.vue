@@ -46,7 +46,7 @@
 										</li>
 										<li class="trace">
 											<input type="text" :disabled="orderStatus==1?true:false"
-											name="本位码" maxlength="12" v-model="item.drugBatch" placeholder="本位码">
+											name="本位码" maxlength="26" v-model="item.drugBatch" placeholder="本位码">
 										</li>
 									</ul>
 								</div>
@@ -82,7 +82,7 @@
 							<div class="detail_info">
 								<div class="detail_info_left"> 
 									<div class="info_name">
-										<h5>开方信息</h5>
+										<h5>医生信息</h5>
 										<div class="info_form">
 											<ul>
 												<li>
@@ -101,7 +101,7 @@
 										</div>
 									</div> 
 									<div class="info_user">
-										<h5>开方信息</h5>
+										<h5>患者信息</h5>
 										<div class="info_sick">
 											<ul>
 												<li>
@@ -124,7 +124,7 @@
 										</div>
 									</div>
 									<div class="info_result">
-										<h5>开方信息</h5>
+										<h5>疾病信息</h5>
 										<div class="info_form">
 											<div>{{data.organDiseaseName}}</div>
 										</div>
@@ -609,7 +609,7 @@ h5{
 }
 .info_user .info_sick li{
 	float: left;
-	width: 50%;
+	width: 44%;
 	display: flex;
 	font-size: 14px;
 	margin-top: 12px;
@@ -617,6 +617,7 @@ h5{
 }
 .info_user .info_sick li span{
 	color: #a4a4a4; 
+	white-space: nowrap;
 }
 .info_user .info_sick li p{
 	flex: 1;

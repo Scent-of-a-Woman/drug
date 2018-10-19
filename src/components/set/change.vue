@@ -92,8 +92,7 @@
            this.$message.error(response.data.msg)
          }
        })
-      }).catch(action => {
-        console.log("点击取消了")  
+      }).catch(action => { 
       })   
     }
   } 

@@ -19,23 +19,15 @@
         <div class="must_info">
           <div class="store_name">
             <p>门店名称<i>*</i></p>
-            <input type="text" name="" v-model="data.name">
+            <input type="text" name="" maxlength="20" v-model="data.name">
         </div>
          <div class="store_phone">
             <p>联系电话<i>*</i></p>
-            <input type="text" name="" v-model="data.phone">
+            <input type="text" name="" maxlength="11" v-model="data.phone">
         </div>
-       <!--  <div class="store_account">
-            <p>登陆账号<i>*</i></p>
-            <input type="text" name="">
-        </div>
-        <div class="store_pwd">
-            <p>登录密码<i>*</i></p>
-            <input type="text" name="">
-        </div> -->
          <div class="store_adress">
             <p>门店地址<i>*</i></p>
-            <input type="text" name="" v-model="data.address">
+            <input type="text" name="" maxlength="40" v-model="data.address">
         </div>
         </div>
         <div class="sure">

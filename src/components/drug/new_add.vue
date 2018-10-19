@@ -30,7 +30,7 @@
 								</div>
 								<div class="yaoqi_name">
 									<p>收款人名称<i>*</i></p>
-									<input type="text" name="" maxlength="30" v-model="gysInfo.name">
+									<input type="text" name="" maxlength="30" v-model="gysInfo.cardName">
 								</div>
 							</div>
 							<div class="newinfo_right">
@@ -44,14 +44,12 @@
 								</div>
 								<div class="yaoqi_name" >
 									<p>开户地区<i>*</i></p>
-									<!-- <input type="text" name="" maxlength="12" v-model='gysInfo.city'> -->
 									<div class="city_select">
 										<el-cascader
 										:options="options"
 										v-model="selectedOptions"
 										@change="handleChange"
 										:separator="' '"
-										value=""
 										>
 									</el-cascader>
 								</div>
@@ -78,25 +76,39 @@
 						<div class="set_info">
 							<div class="setup">
 								<p>配送到家<i>(小时)</i></p>
-								<input type="text" name="" maxlength="2" v-model='gysInfo.deliveryHome'>
-							</div>
-							<div class="setup">
-								<p>配送到社区医院<i>(分钟)</i></p>
-								<input type="text" name="" maxlength="2" v-model='gysInfo.deliveredHospital'>
-							</div>
-							<div class="shuoming">
-								<p><i>*</i>配送服务(时间)是影响用户购物体验的关键，请按照实际情况设置。</p>
-							</div>
-							
+								<el-select v-model="value4" clearable placeholder="请选择">
+									<el-option
+									v-for="item in optionsHome"
+									:key="item.value4"
+									:label="item.label"
+									:value="item.value4">
+									</el-option>
+								</el-select>
 						</div>
-						<div class="sure_info">
-							<span @click='sureInfo()'>确定</span>
+						<div class="setup">
+							<p>配送到社区医院<i>(分钟)</i></p>
+							<el-select v-model="value5" clearable placeholder="请选择">
+									<el-option
+									v-for="item in optionsHos"
+									:key="item.value5"
+									:label="item.label"
+									:value="item.value5">
+									</el-option>
+								</el-select>
 						</div>
+						<div class="shuoming">
+							<p><i>*</i>配送服务(时间)是影响用户购物体验的关键，请按照实际情况设置。</p>
+						</div>
+
 					</div>
-				</el-tab-pane>
-			</el-tabs>
-		</div>
+					<div class="sure_info">
+						<span @click='sureInfo()'>确定</span>
+					</div>
+				</div>
+			</el-tab-pane>
+		</el-tabs>
 	</div>
+</div>
 </div>
 </template> 
 
@@ -114,6 +126,101 @@
 				activeName: 'first',
 				gysId:'',
 				url:familyDoctor(),
+				optionsHome: [{
+          value4: '1小时',
+          label: '1小时'
+        }, {
+          value4: '2小时',
+          label: '2小时'
+        }, {
+          value4: '3小时',
+          label: '3小时'
+        }, {
+          value4: '4小时',
+          label: '4小时'
+        }, {
+          value4: '5小时',
+          label: '5小时'
+        },{
+          value4: '6小时',
+          label: '6小时'
+        }, {
+          value4: '7小时',
+          label: '7小时'
+        }, {
+          value4: '8小时',
+          label: '8小时'
+        }, {
+          value4: '9小时',
+          label: '9小时'
+        }, {
+          value4: '10小时',
+          label: '10小时'
+        },{
+          value4: '11小时',
+          label: '11小时'
+        }, {
+          value4: '12小时',
+          label: '12小时'
+        }, {
+          value4: '13小时',
+          label: '13小时'
+        }, {
+          value4: '14小时',
+          label: '14小时'
+        }, {
+          value4: '15小时',
+          label: '15小时'
+        },
+         {
+          value4: '16小时',
+          label: '16小时'
+        }, {
+          value4: '17小时',
+          label: '17小时'
+        }, {
+          value4: '18小时',
+          label: '18小时'
+        }, {
+          value4: '19小时',
+          label: '19小时'
+        }, {
+          value4: '20小时',
+          label: '20小时'
+        }, {
+          value4: '21小时',
+          label: '21小时'
+        }, {
+          value4: '22小时',
+          label: '22小时'
+        }, {
+          value4: '23小时',
+          label: '23小时'
+        }, {
+          value4: '24小时',
+          label: '24小时'
+        }],
+        value4: '',
+        optionsHos: [{
+          value5: '10分钟',
+          label: '10分钟'
+        }, {
+          value5: '20分钟',
+          label: '20分钟'
+        }, {
+          value5: '30分钟',
+          label: '30分钟'
+        }, {
+          value5: '40分钟',
+          label: '40分钟'
+        },  {
+          value5: '50分钟',
+          label: '50分钟'
+        }, {
+          value5: '60分钟',
+          label: '60分钟'
+        },],
+        value5: '',
 				gysInfo:{
 					suppliersName:'',//供应商名称
 					address:'',//开户地址
@@ -165,6 +272,8 @@
 					this.selectedOptions.push(this.gysInfo.province)
 					this.selectedOptions.push(this.gysInfo.city)
 					this.selectedOptions.push(this.gysInfo.area)
+					this.value5=this.gysInfo.deliveredHospital
+					this.value4=this.gysInfo.deliveryHome
 				})
 			},
 			//创建
@@ -194,11 +303,11 @@
 					}
 				}).then((response)=>{
 					if(response.data.code==0){
-					 this.$message.success(response.data.msg)
-					  let _this=this	
-					  setTimeout(function(){
-					   _this.$router.push("/drug/Supplier") 
-					}, 1000);					
+						this.$message.success(response.data.msg)
+						let _this=this	
+						setTimeout(function(){
+							_this.$router.push("/drug/Supplier") 
+						}, 1000);					
 					}else{
 						this.$message.error(response.data.msg)
 					}
@@ -230,7 +339,7 @@
 					}
 				}).then((response)=>{
 					if(response.data.code==0){
-					 this.$message.success(response.data.msg)						
+						this.$message.success(response.data.msg)						
 					}else{
 						this.$message.error(response.data.msg)
 					}
@@ -245,15 +354,15 @@
 		  		url: this.url+"/zhuoya-yplz/gys/serverSave",
 		  		headers: {'token': localStorage.getItem("token")},
 		  		data: {
-		  			deliveryHome:this.gysInfo.deliveryHome,
-		  			deliveredHospital:this.gysInfo.deliveredHospital
+		  			deliveryHome:this.value4,
+		  			deliveredHospital:this.value5
 		  		}
 		  	}).then((response)=>{
 		  		if(response.data.code==0){
-					 this.$message.success(response.data.msg)						
-					}else{
-						this.$message.error(response.data.msg)
-					}
+		  			this.$message.success(response.data.msg)						
+		  		}else{
+		  			this.$message.error(response.data.msg)
+		  		}
 		  	})
 		  }
 		} 

@@ -69,10 +69,11 @@
 <!-- 内容 -->
 <div class="yao_content">
   <div class="left">
-    <h5>药品列表</h5>
+    <h5 v-if="categoryName==''?true:false">药品列表</h5>
+    <h5 v-if="categoryName!=''?true:false">{{categoryName}}</h5>
     <div class="left_info">
       <ul class="yaopin_list" v-for="(item,index) in yaopin_list">
-        <li @click="yaopinInfo(item.id)">{{item.name}}</li>
+        <li @click="yaopinInfo(item.id,index)" :title="item.name" :class="{current:index==isActive}">{{item.name}}</li>
       </ul>
     </div>
    
@@ -97,7 +98,7 @@
     </li>
     <li class="yao_type">
       <span>规格<em>*</em></span>
-      <input type="text" name="" placeholder="药品规格" v-model="yaopin_info.specifications" disabled>
+      <input type="text" placeholder="药品规格" v-model="yaopin_info.specifications" disabled :title="yaopin_info.specifications">
     </li>
     <li class="yao_type">
       <span>单位<em>*</em></span>
@@ -145,8 +146,8 @@
       background
       layout="prev, pager, next"
       :total="yaopin_total"
-      v-if="yaopin_total <= 13 ? false:true"
-      :page-size="13"
+      v-if="yaopin_total <= 20 ? false:true"
+      :page-size="20"
       @current-change="handleCurrentChange"
       >
     </el-pagination>
@@ -189,14 +190,16 @@
         value1:"",//上下架查询
         value2:"",//一级目录
         value3:"",//二级目录
-        data:[
-        ],
+        data:[],
+        ind:'',
         url:familyDoctor(),
         yaopin_list:[],//查询药品列表
         yaopin_total:"0",
         yaopin_info:{},//药品信息
         menu:'',//一级目录
-        menus:""//二级目录
+        menus:"",//二级目录
+        isActive:-1,
+        categoryName:""//处方分类
       }; 
     }, 
     created(){
@@ -235,76 +238,154 @@
         })
       },
       //通过目录查询
-      sureMenu:function(){
-      if(this.value3&&this.value2){ //通过二级目录查询
+    sureMenu:function(){
+      if(this.search){//关键字查询
+          axios({
+        method: 'post',
+        url: this.url+"/zhuoya-yplz/drug/selectlist",
+        headers: {'token': localStorage.getItem("token")},
+        data: {
+          pageNum: 1,
+          pageSize: '20',
+          directory:"0",
+          searchKey:this.search
+        }
+        }).then((response)=>{ 
+          this.fullscreenLoading = true;
+          setTimeout(() => {
+            this.categoryName=""
+          this.fullscreenLoading = false;
+           this.yaopin_list=response.data.page.records
+         this.yaopin_total=response.data.page.total
+         this.categoryName=''
+         }, 2000);
+       })
+      }else if(this.value1&&this.value2==""){//上下架查询
+
+           axios({
+        method: 'post',
+        url: this.url+"/zhuoya-yplz/drug/selectlist",
+        headers: {'token': localStorage.getItem("token")},
+        data: {
+          pageNum: 1,
+          pageSize: '20',
+          directory:"0",
+          shelves:this.value1,
+        }
+        }).then((response)=>{ 
+        this.fullscreenLoading = true;
+          setTimeout(() => {
+            this.categoryName=""
+          this.fullscreenLoading = false;
+           this.yaopin_list=response.data.page.records
+         this.yaopin_total=response.data.page.total
+         this.categoryName=''
+         }, 2000);
+       })
+      }else if(this.value1&&this.value2&&this.value3){//2级目录查询
+           axios({
+        method: 'post',
+        url: this.url+"/zhuoya-yplz/drug/selectlist",
+        headers: {'token': localStorage.getItem("token")},
+        data: {
+          pageNum: 1,
+          pageSize: '20',
+          directory:"2",
+          shelves:this.value1,
+          parentId:this.value3
+        }
+        }).then((response)=>{ 
+       this.fullscreenLoading = true;
+          setTimeout(() => {
+          this.fullscreenLoading = false;
+          this.yaopin_list=response.data.page.records
+          this.yaopin_total=response.data.page.total
+          this.categoryName=response.data.page.records[0].categoryName
+         }, 2000);
+       })
+      }else if(this.value1&&this.value2&&this.value3==""){//上下架和一级目录查询
+           axios({
+        method: 'post',
+        url: this.url+"/zhuoya-yplz/drug/selectlist",
+        headers: {'token': localStorage.getItem("token")},
+        data: {
+          pageNum: 1,
+          pageSize: '20',
+          directory:"1",
+          shelves:this.value1,
+          parentId:this.value2
+        }
+        }).then((response)=>{ 
+        this.fullscreenLoading = true;
+          setTimeout(() => {
+          this.fullscreenLoading = false;
+           this.yaopin_list=response.data.page.records
+          this.yaopin_total=response.data.page.total
+          this.categoryName=''
+         }, 2000);
+       })
+      }else if(this.value1==""&&this.value2&&this.value3){//二级和一级目录查询
+           axios({
+        method: 'post',
+        url: this.url+"/zhuoya-yplz/drug/selectlist",
+        headers: {'token': localStorage.getItem("token")},
+        data: {
+          pageNum: 1,
+          pageSize: '20',
+          directory:"2",
+          parentId:this.value3
+        }
+        }).then((response)=>{ 
+       this.fullscreenLoading = true;
+          setTimeout(() => {
+          this.fullscreenLoading = false;
+           this.yaopin_list=response.data.page.records
+         this.yaopin_total=response.data.page.total
+          this.categoryName=response.data.page.records[0].categoryName
+
+         }, 2000);
+       })
+      }else if(this.value1==""&&this.value2&&this.value3==""){//一级目录查询
+           axios({
+        method: 'post',
+        url: this.url+"/zhuoya-yplz/drug/selectlist",
+        headers: {'token': localStorage.getItem("token")},
+        data: {
+          pageNum: 1,
+          pageSize: '20',
+          directory:"1",
+          parentId:this.value2
+        }
+        }).then((response)=>{ 
+       this.fullscreenLoading = true;
+          setTimeout(() => {
+          this.fullscreenLoading = false;
+           this.yaopin_list=response.data.page.records
+         this.yaopin_total=response.data.page.total
+         this.categoryName=''
+         }, 2000);
+       })
+      }else{
          axios({
-          method: 'post',
-          url: this.url+"/zhuoya-yplz/drug/selectlist",
-          headers: {'token': localStorage.getItem("token")},
-          data: {
-            parentId:this.value3,
-            pageNum:"1",
-            pageSize:"20",
-            directory:"2",
-            shelves:this.value1
-          }
-        }).then((response)=>{
-           this.fullscreenLoading = true;
-          setTimeout(() => {
-          this.fullscreenLoading = false;
-          if(response.data.code==500){
-            this.$message.error(response.data.msg)
-            return
-          }
-         this.yaopin_list=response.data.page.records
-         this.yaopin_total=response.data.page.total
-         }, 2000);
-          
-       })
-      }else if(this.value3==""&&this.value2!=""){ // 二级没有选择  一级目录查询
-        axios({
-          method: 'post',
-          url: this.url+"/zhuoya-yplz/drug/selectlist",
-          headers: {'token': localStorage.getItem("token")},
-          data: {
-            parentId:this.value2,
-            pageNum:"1",
-            pageSize:"20",
-            directory:"1",
-            shelves:this.value1
-          }
-        }).then((response)=>{
-           this.fullscreenLoading = true;
+        method: 'post',
+        url: this.url+"/zhuoya-yplz/drug/selectlist",
+        headers: {'token': localStorage.getItem("token")},
+        data: {
+          pageNum: 1,
+          pageSize: '20',
+          directory:"1",
+        }
+        }).then((response)=>{ 
+
+       this.fullscreenLoading = true;
           setTimeout(() => {
           this.fullscreenLoading = false;
            this.yaopin_list=response.data.page.records
          this.yaopin_total=response.data.page.total
-          this.$message(response.data.msg);
+         this.categoryName=''
          }, 2000);
-        
        })
-      }else if(this.value2==""){ //一级没有选择 上下架查询
-            axios({
-          method: 'post',
-          url: this.url+"/zhuoya-yplz/drug/selectlist",
-          headers: {'token': localStorage.getItem("token")},
-          data: {
-            pageNum:"1",
-            parentId:"0",
-            pageSize:"20",
-            directory:"0",
-            shelves:this.value1
-          }
-        }).then((response)=>{
-           this.fullscreenLoading = true;
-          setTimeout(() => {
-          this.fullscreenLoading = false;
-           this.yaopin_list=response.data.page.records
-         this.yaopin_total=response.data.page.total
-         }, 2000);
-        
-      })
-     }
+      }
     },
     searchKey:function() {
       axios({
@@ -318,13 +399,8 @@
           searchKey:this.search
         }
       }).then((response)=>{
-         this.fullscreenLoading = true;
-          setTimeout(() => {
-          this.fullscreenLoading = false;
           this.yaopin_list=response.data.page.records
-        this.yaopin_total=response.data.page.total
-         }, 2000);
-        
+        this.yaopin_total=response.data.page.total    
       })
     },
       // 列表查询
@@ -344,8 +420,8 @@
       })
     },
     handleCurrentChange(val){
-      if(this.search){
-        axios({
+      if(this.search){//关键字查询
+          axios({
         method: 'post',
         url: this.url+"/zhuoya-yplz/drug/selectlist",
         headers: {'token': localStorage.getItem("token")},
@@ -355,83 +431,90 @@
           directory:"0",
           searchKey:this.search
         }
-      }).then((response)=>{
-        
+        }).then((response)=>{ 
         this.yaopin_list=response.data.page.records
         this.yaopin_total=response.data.page.total
-      })
-      }else if(!this.search&&!this.value1&&!this.value2){
-         axios({
-         method: 'post',
-         url: this.url+"/zhuoya-yplz/drug/selectlist",
-         headers: {'token': localStorage.getItem("token")},
-         data: {
-           pageNum: val,
-           pageSize: '20',
-           directory:"0",
-           searchKey:this.search
-        }
-      }).then((response)=>{
-        
-        this.yaopin_list=response.data.page.records
-        this.yaopin_total=response.data.page.total
-      })
-      }
-      else if(!this.search&&!this.value1){
-         axios({
-         method: 'post',
-         url: this.url+"/zhuoya-yplz/drug/selectlist",
-         headers: {'token': localStorage.getItem("token")},
-         data: {
-           pageNum: val,
-           pageSize: '20',
-           directory:"0",
-           searchKey:this.search
-        }
-      }).then((response)=>{
-         
-        this.yaopin_list=response.data.page.records
-        this.yaopin_total=response.data.page.total
-      })
-      }else if(this.value1&&this.value2==""){
-          axios({
-          method: 'post',
-          url: this.url+"/zhuoya-yplz/drug/selectlist",
-          headers: {'token': localStorage.getItem("token")},
-          data: {
-            pageNum:val,
-            parentId:"0",
-            pageSize:"20",
-            directory:"0",
-            shelves:this.value1,
-            searchKey:this.search
-          }
-        }).then((response)=>{
-         
-         this.yaopin_list=response.data.page.records
-         this.yaopin_total=response.data.page.total
-        })
-      }else if(this.value3==""&&this.value2!=""){
-          axios({
-          method: 'post',
-          url: this.url+"/zhuoya-yplz/drug/selectlist",
-          headers: {'token': localStorage.getItem("token")},
-          data: {
-            parentId:this.value2,
-            pageNum:val,
-            pageSize:"20",
-            directory:"1",
-            shelves:this.value1,
-            searchKey:this.search
-          }
-        }).then((response)=>{
-         
-         this.yaopin_list=response.data.page.records
-         this.yaopin_total=response.data.page.total
        })
-      }
+      }else if(this.value1&&this.value2==""){//上下架查询
+           axios({
+        method: 'post',
+        url: this.url+"/zhuoya-yplz/drug/selectlist",
+        headers: {'token': localStorage.getItem("token")},
+        data: {
+          pageNum: val,
+          pageSize: '20',
+          directory:"0",
+          shelves:this.value1,
+        }
+        }).then((response)=>{ 
+        this.yaopin_list=response.data.page.records
+        this.yaopin_total=response.data.page.total
+       })
+      }else if(this.value1&&this.value2&&this.value3){//2级目录查询
+           axios({
+        method: 'post',
+        url: this.url+"/zhuoya-yplz/drug/selectlist",
+        headers: {'token': localStorage.getItem("token")},
+        data: {
+          pageNum: val,
+          pageSize: '20',
+          directory:"2",
+          shelves:this.value1,
+          parentId:this.value3
+        }
+        }).then((response)=>{ 
+        this.yaopin_list=response.data.page.records
+        this.yaopin_total=response.data.page.total
+       })
+      }else if(this.value1&&this.value2&&this.value3==""){//上下架和一级目录查询
+           axios({
+        method: 'post',
+        url: this.url+"/zhuoya-yplz/drug/selectlist",
+        headers: {'token': localStorage.getItem("token")},
+        data: {
+          pageNum: val,
+          pageSize: '20',
+          directory:"1",
+          shelves:this.value1,
+          parentId:this.value2
+        }
+        }).then((response)=>{ 
+        this.yaopin_list=response.data.page.records
+        this.yaopin_total=response.data.page.total
+       })
+      }else if(this.value1==""&&this.value2&&this.value3){//二级和一级目录查询
+           axios({
+        method: 'post',
+        url: this.url+"/zhuoya-yplz/drug/selectlist",
+        headers: {'token': localStorage.getItem("token")},
+        data: {
+          pageNum: val,
+          pageSize: '20',
+          directory:"2",
+          parentId:this.value3
+        }
+        }).then((response)=>{ 
+        this.yaopin_list=response.data.page.records
+        this.yaopin_total=response.data.page.total
+       })
+      }else if(this.value1==""&&this.value2==''&&this.value3==""){//一级目录查询
+           axios({
+        method: 'post',
+        url: this.url+"/zhuoya-yplz/drug/selectlist",
+        headers: {'token': localStorage.getItem("token")},
+        data: {
+          pageNum: val,
+          pageSize: '20',
+           directory:"0",
+        }
+        }).then((response)=>{ 
+        this.yaopin_list=response.data.page.records
+        this.yaopin_total=response.data.page.total
+       })
+      }    
     },
-    yaopinInfo:function(id){
+    yaopinInfo:function(id,index){
+     this.isActive=index;
      axios({
       method: 'post',
       url: this.url+"/zhuoya-yplz/drug/select",
@@ -444,7 +527,7 @@
           setTimeout(() => {
           this.fullscreenLoading = false;
           this.value=response.data.drug.drugIsShelves
-    this.yaopin_info=response.data.drug
+          this.yaopin_info=response.data.drug
          }, 2000);
       
   })
@@ -471,7 +554,10 @@
 </script> 
 
 <style scoped> 
-
+.current{
+  background-color: #8a8fff;
+  color: white;
+}
 .take_status{
   float: left;
   width: 200px;
@@ -603,9 +689,12 @@
 }
 .yaopin_list li{
   line-height: 40px;
-  padding-left: 3%;
+  padding:0 3%;
   font-size: 16px;
   cursor: pointer;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .left_info ul:nth-of-type(even){
   background-color: #f7f9ff;

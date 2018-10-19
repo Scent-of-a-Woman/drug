@@ -139,9 +139,11 @@ methods: {
 // 刷新
 openFullScreen() {
 	this.fullscreenLoading = true;
+		this.requestdata()
+		this.search=''
+		this.value=''
 	setTimeout(() => {
 		this.fullscreenLoading = false;
-		this.requestdata()
 	}, 2000);
 },
 // 分页
@@ -155,7 +157,24 @@ handleCurrentChange(val){
 			pageNum: val,
 			pageSize: '6',
 			qyfs:"0",
-			status:this.value
+			status:this.value,
+			searchkey:this.search
+		}
+	}).then((response)=>{
+		this.data=response.data.accountPage.records
+		this.total=response.data.accountPage.total
+	})
+	}else if(this.search){
+		axios({
+		method: 'post',
+		url: this.url+"/zhuoya-yplz/Order/findOrderList",
+		headers: {'token': localStorage.getItem("token")},
+		data: {
+			pageNum: val,
+			pageSize: '6',
+			qyfs:"0",
+			status:this.value,
+			searchkey:this.search
 		}
 	}).then((response)=>{
 		this.data=response.data.accountPage.records
@@ -169,7 +188,7 @@ handleCurrentChange(val){
 		data: {
 			pageNum: val,
 			pageSize: '6',
-			qyfs:"0"
+			qyfs:"0",
 		}
 	}).then((response)=>{
 		this.data=response.data.accountPage.records

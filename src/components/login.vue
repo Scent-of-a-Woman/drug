@@ -114,6 +114,9 @@ export default {
               case 5://5  卫计委  wjw001
               _this.$router.push("/drug/Supplier")
               break;
+               case 6://5  配送员  国药配送
+              _this.$router.push("/order/give")
+              break;
             }
           }else{
             _this.$message.error(msg)
@@ -122,7 +125,6 @@ export default {
     },
     //记住账号
     remberAccount:function(){
-      console.log(this.account)
     },
     //自动登录
     loginStatus:function(){

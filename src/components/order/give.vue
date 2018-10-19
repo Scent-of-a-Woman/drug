@@ -24,7 +24,7 @@
 			</div>
 			<div class="search">
 				<div class="search_input">
-					<input type="text" name="" placeholder="处方编号" maxlength="18" v-model="search">
+					<input type="text" name="" placeholder="处方编号/手机号码" maxlength="18" v-model="search">
 					<div class="btn_search" @click="btn_search">
 						<i class="el-icon-search icon_turn"></i>
 					</div>
@@ -140,9 +140,11 @@
 			// 刷新
 			openFullScreen() {
 				this.fullscreenLoading = true;
+				this.search=''
+				this.value=''
+					this.requestdata()
 				setTimeout(() => {
 					this.fullscreenLoading = false;
-					this.requestdata()
 				}, 2000);
 			},
 			// 分页
@@ -156,11 +158,26 @@
 			pageNum: val,
 			pageSize: '6',
 			qyfs:"1",
-			ps_status:this.value
-
+			ps_status:this.value,
+			searchkey:this.search
 		}
 	}).then((response)=>{
-		console.log(response)
+		this.data=response.data.accountPage.records
+		this.total=response.data.accountPage.total
+	})
+	}else if(this.search){
+		axios({
+		method: 'post',
+		url: this.url+"/zhuoya-yplz/Order/findOrderList",
+		headers: {'token': localStorage.getItem("token")},
+		data: {
+			pageNum: val,
+			pageSize: '6',
+			qyfs:"1",
+			ps_status:this.value,
+			searchkey:this.search
+		}
+	}).then((response)=>{
 		this.data=response.data.accountPage.records
 		this.total=response.data.accountPage.total
 	})
@@ -192,7 +209,6 @@
 						qyfs:"1"
 					}
 				}).then((response)=>{
-					console.log(response)
 					this.total=response.data.accountPage.total
 					this.data=response.data.accountPage.records
 				})
