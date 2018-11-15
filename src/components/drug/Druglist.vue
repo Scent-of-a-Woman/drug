@@ -258,7 +258,7 @@
            this.yaopin_list=response.data.page.records
          this.yaopin_total=response.data.page.total
          this.categoryName=''
-         }, 2000);
+         }, 1000);
        })
       }else if(this.value1&&this.value2==""){//上下架查询
 
@@ -280,7 +280,7 @@
            this.yaopin_list=response.data.page.records
          this.yaopin_total=response.data.page.total
          this.categoryName=''
-         }, 2000);
+         }, 1000);
        })
       }else if(this.value1&&this.value2&&this.value3){//2级目录查询
            axios({
@@ -301,7 +301,7 @@
           this.yaopin_list=response.data.page.records
           this.yaopin_total=response.data.page.total
           this.categoryName=response.data.page.records[0].categoryName
-         }, 2000);
+         }, 1000);
        })
       }else if(this.value1&&this.value2&&this.value3==""){//上下架和一级目录查询
            axios({
@@ -322,7 +322,7 @@
            this.yaopin_list=response.data.page.records
           this.yaopin_total=response.data.page.total
           this.categoryName=''
-         }, 2000);
+         }, 1000);
        })
       }else if(this.value1==""&&this.value2&&this.value3){//二级和一级目录查询
            axios({
@@ -343,7 +343,7 @@
          this.yaopin_total=response.data.page.total
           this.categoryName=response.data.page.records[0].categoryName
 
-         }, 2000);
+         }, 1000);
        })
       }else if(this.value1==""&&this.value2&&this.value3==""){//一级目录查询
            axios({
@@ -363,7 +363,7 @@
            this.yaopin_list=response.data.page.records
          this.yaopin_total=response.data.page.total
          this.categoryName=''
-         }, 2000);
+         }, 1000);
        })
       }else{
          axios({
@@ -383,7 +383,7 @@
            this.yaopin_list=response.data.page.records
          this.yaopin_total=response.data.page.total
          this.categoryName=''
-         }, 2000);
+         }, 1000);
        })
       }
     },
@@ -522,14 +522,9 @@
       data: {
        id:id
      }
-   }).then((response)=>{
-     this.fullscreenLoading = true;
-          setTimeout(() => {
-          this.fullscreenLoading = false;
+   }).then((response)=>{   
           this.value=response.data.drug.drugIsShelves
-          this.yaopin_info=response.data.drug
-         }, 2000);
-      
+          this.yaopin_info=response.data.drug     
   })
  },
       //药品上下架或修改价格 

@@ -79,6 +79,8 @@ import { familyDoctor } from "../../common/common.js"
       }; 
     }, 
     created(){
+      window.localStorage.removeItem("cforeId")
+      window.localStorage.removeItem("ps_home")
   this.requestData()
 },
     methods: { 

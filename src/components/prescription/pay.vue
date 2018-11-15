@@ -117,7 +117,6 @@ openFullScreen() {
 	}, 2000);
 },
 			requestData:function(){
-				if(this.ps_home){
 					axios({
 					method: 'post',
 					url: this.url+"/zhuoya-yplz/pay/createOrder",
@@ -128,8 +127,8 @@ openFullScreen() {
 						gysId:this.ps_home.gysId+"",
 						cfId:this.ps_home.cfId+"",
 						qyfs:1+"",
-		 				// amount:this.ps_home.price,
-		 				amount:"0.01", 
+		 				amount:this.ps_home.price,
+		 				// amount:"0.01", 
 		 				address:this.data.address
 		 			}
 		 		}).then((response)=>{
@@ -139,29 +138,6 @@ openFullScreen() {
 		 			this.drugs_sum=response.data.drugs_sum
 		 			this.qrcode()
 		 		})
-				}else{
-					axios({
-					method: 'post',
-					url: this.url+"/zhuoya-yplz/pay/createOrder",
-					headers: {'token': localStorage.getItem("token")},
-					data: {
-						name:this.data.name,
-						phone:this.data.phone,
-						gysId:this.ps_yiyuan.gysId+"",
-						cfId:this.ps_yiyuan.cfId+"",
-						qyfs:1+"",
-		 				// amount:this.ps_yiyuan.price,
-		 				amount:"0.01", 
-		 				address:this.data.address
-		 			}
-		 		}).then((response)=>{
-		 			this.ewm=response.data.qrCode
-		 			this.orderNum=response.data.tradeNo
-		 			this.druglist=response.data.drugList
-		 			this.drugs_sum=response.data.drugs_sum
-		 			this.qrcode()
-		 		})
-				}
 		 	},
 		 	qrcode () {
 		 		let qrcode = new QRCode('qrcode', {
@@ -386,6 +362,7 @@ h3{
 	width: 200px;
 	line-height: 200px;
 	text-align: center;
+	overflow: hidden;
 }
 .code_info{
 	text-align: center;
